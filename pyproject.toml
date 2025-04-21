@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tinyurl-mcp-server"
+version = "1.0.0"
+description = "TinyURL MCP Server"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mcp>=1.6.0",
+    "requests>=2.32.3",
+]
+
+[project.scripts]
+tinyurl-mcp-server = "tinyurl_mcp_server:main"
