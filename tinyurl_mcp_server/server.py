@@ -4,7 +4,7 @@ import requests
 from typing import Dict, Any
 from mcp.server.fastmcp import FastMCP
 
-# 配置日志
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -12,58 +12,58 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def get_api_key() -> str:
-    """从环境变量获取TinyURL API密钥"""
+    """Get TinyURL API key from environment variables"""
     api_key = os.getenv("TINYURL_API_KEY")
     if not api_key:
-        raise ValueError("TINYURL_API_KEY环境变量必须设置")
+        raise ValueError("TINYURL_API_KEY environment variable must be set")
     return api_key
 
-# 初始化FastMCP
+# Initialize FastMCP
 mcp = FastMCP("tinyurl")
 
 @mcp.tool()
 def create_short_url(url: str) -> Dict[str, Any]:
     """
-    将长URL转换为短链接
+    Convert a long URL to a short link
     
-    参数:
-    - url: 需要缩短的URL
+    Parameters:
+    - url: URL to be shortened
     
-    返回:
-    - 包含短链接信息的字典
+    Returns:
+    - Dictionary containing short link information
     """
     try:
         api_key = get_api_key()
         endpoint = f"https://api.tinyurl.com/create?api_token={api_key}"
         
-        # 准备请求参数
+        # Prepare request parameters
         payload = {"url": url}
         
-        # 设置请求头
+        # Set request headers
         headers = {
             "accept": "application/json",
             "Content-Type": "application/json",
         }
         
-        # 发送API请求
+        # Send API request
         response = requests.post(endpoint, headers=headers, json=payload)
         response.raise_for_status()
         
-        # 返回API响应
+        # Return API response
         return response.json()
     except requests.exceptions.RequestException as e:
-        logger.error(f"请求失败: {str(e)}")
-        return {"error": f"无法创建短链接: {str(e)}"}
+        logger.error(f"Request failed: {str(e)}")
+        return {"error": f"Unable to create short link: {str(e)}"}
     except ValueError as e:
-        logger.error(f"配置错误: {str(e)}")
+        logger.error(f"Configuration error: {str(e)}")
         return {"error": str(e)}
     except Exception as e:
-        logger.error(f"未知错误: {str(e)}")
-        return {"error": f"创建短链接时发生错误: {str(e)}"}
+        logger.error(f"Unknown error: {str(e)}")
+        return {"error": f"Error occurred while creating short link: {str(e)}"}
 
 def main():
-    """启动MCP服务器"""
-    logger.info("启动TinyURL MCP服务...")
+    """Start MCP server"""
+    logger.info("Starting TinyURL MCP service...")
     mcp.run()
 
 if __name__ == "__main__":
